@@ -5,6 +5,19 @@ import moviesFromServer from './api/movies.json';
 
 export const App = () => {
   const [query, setQuery] = useState('');
+  const [visibleMovies, setVisibleMovies] = useState(moviesFromServer);
+
+  const filterMovies = value => {
+    const normalizedValue = value.trim().toLowerCase();
+
+    setVisibleMovies(
+      moviesFromServer.filter(
+        movie =>
+          movie.title.toLowerCase().includes(normalizedValue) ||
+          movie.description.toLowerCase().includes(normalizedValue),
+      ),
+    );
+  };
 
   return (
     <div className="page">
@@ -20,27 +33,21 @@ export const App = () => {
               <input
                 type="text"
                 id="search-query"
+                value={query}
                 className="input"
                 placeholder="Type search word"
                 onChange={event => {
-                  setQuery(event.currentTarget.value);
+                  const { value } = event.currentTarget;
+
+                  setQuery(value);
+                  filterMovies(value);
                 }}
               />
             </div>
           </div>
         </div>
 
-        <MoviesList
-          movies={moviesFromServer.filter(
-            movie =>
-              movie.title
-                .toLocaleLowerCase()
-                .includes(query.trim().toLocaleLowerCase()) ||
-              movie.description
-                .toLocaleLowerCase()
-                .includes(query.trim().toLocaleLowerCase()),
-          )}
-        />
+        <MoviesList movies={visibleMovies} />
       </div>
 
       <div className="sidebar">Sidebar goes here</div>
